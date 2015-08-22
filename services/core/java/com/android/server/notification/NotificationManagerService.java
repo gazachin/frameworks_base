@@ -224,7 +224,10 @@ public class NotificationManagerService extends SystemService {
     private long[] mDefaultVibrationPattern;
 
     private boolean mAdjustableNotificationLedBrightness;
-    private int mAdjustableNotificationLedBrightnessLevel = LIGHT_BRIGHTNESS_MAXIMUM;
+    private int mNotificationLedBrightnessLevel = LIGHT_BRIGHTNESS_MAXIMUM;
+
+    private boolean mMultipleNotificationLeds;
+    private boolean mMultipleLedsEnabledSetting = false;
 
     private boolean mScreenOnEnabled = false;
     private boolean mScreenOnDefault = false;
@@ -993,10 +996,10 @@ public class NotificationManagerService extends SystemService {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NOTIFICATION_LIGHT_PULSE_CUSTOM_VALUES),
                     false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.Global.getUriFor(
+            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NOTIFICATION_LIGHT_SCREEN_ON),
                     false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
+            resolver.registerContentObserver(Settings.Global.getUriFor(
                     Settings.Global.ZEN_DISABLE_DUCKING_DURING_MEDIA_PLAYBACK), false,
                     this, UserHandle.USER_ALL);
             resolver.registerContentObserver(MUTE_ANNOYING_NOTIFICATIONS_THRESHOLD_URI,
@@ -1004,6 +1007,11 @@ public class NotificationManagerService extends SystemService {
             if (mAdjustableNotificationLedBrightness) {
                 resolver.registerContentObserver(Settings.System.getUriFor(
                         Settings.System.NOTIFICATION_LIGHT_BRIGHTNESS_LEVEL),
+                        false, this, UserHandle.USER_ALL);
+            }
+            if (mMultipleNotificationLeds) {
+                resolver.registerContentObserver(Settings.System.getUriFor(
+                        Settings.System.NOTIFICATION_LIGHT_MULTIPLE_LEDS_ENABLE),
                         false, this, UserHandle.USER_ALL);
             }
             update(null);
@@ -1053,15 +1061,22 @@ public class NotificationManagerService extends SystemService {
 
             // Notification LED brightness
             if (mAdjustableNotificationLedBrightness) {
-                mAdjustableNotificationLedBrightnessLevel = Settings.System.getIntForUser(resolver,
-                    Settings.System.NOTIFICATION_LIGHT_BRIGHTNESS_LEVEL,
-                    LIGHT_BRIGHTNESS_MAXIMUM, UserHandle.USER_CURRENT);
+                mNotificationLedBrightnessLevel = Settings.System.getIntForUser(resolver,
+                        Settings.System.NOTIFICATION_LIGHT_BRIGHTNESS_LEVEL,
+                        LIGHT_BRIGHTNESS_MAXIMUM, UserHandle.USER_CURRENT);
+            }
+
+            // Multiple LEDs enabled
+            if (mMultipleNotificationLeds) {
+                mMultipleLedsEnabledSetting = (Settings.System.getIntForUser(resolver,
+                        Settings.System.NOTIFICATION_LIGHT_MULTIPLE_LEDS_ENABLE,
+                        mMultipleNotificationLeds ? 1 : 0, UserHandle.USER_CURRENT) != 0);
             }
 
             // Notification lights with screen on
             mScreenOnEnabled = (Settings.System.getIntForUser(resolver,
-                Settings.System.NOTIFICATION_LIGHT_SCREEN_ON,
-                mScreenOnDefault ? 1 : 0, UserHandle.USER_CURRENT) != 0);
+                    Settings.System.NOTIFICATION_LIGHT_SCREEN_ON,
+                    mScreenOnDefault ? 1 : 0, UserHandle.USER_CURRENT) != 0);
 
             updateNotificationPulse();
 
@@ -1192,6 +1207,8 @@ public class NotificationManagerService extends SystemService {
 
         mAdjustableNotificationLedBrightness = resources.getBoolean(
                 com.android.internal.R.bool.config_adjustableNotificationLedBrightness);
+        mMultipleNotificationLeds = resources.getBoolean(
+                com.android.internal.R.bool.config_multipleNotificationLeds);
 
         mUseAttentionLight = resources.getBoolean(R.bool.config_useAttentionLight);
 
@@ -3162,7 +3179,7 @@ public class NotificationManagerService extends SystemService {
             enableLed = false;
         } else if (isLedNotificationForcedOn(ledNotification)) {
             enableLed = true;
-        } else if (! mScreenOnEnabled && (mInCall || mScreenOn)) {
+        } else if (!mScreenOnEnabled && (mInCall || mScreenOn)) {
             enableLed = false;
         } else {
             enableLed = true;
@@ -3193,7 +3210,8 @@ public class NotificationManagerService extends SystemService {
             }
 
             // update the LEDs modes variables
-            mNotificationLight.setModes(mAdjustableNotificationLedBrightnessLevel);
+            mNotificationLight.setModes(mNotificationLedBrightnessLevel,
+                    mMultipleLedsEnabledSetting);
 
             if (mNotificationPulseEnabled) {
                 // pulse repeatedly
