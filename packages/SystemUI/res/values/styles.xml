@@ -79,7 +79,7 @@
 
     <style name="TextAppearance.StatusBar.Clock" parent="@*android:style/TextAppearance.StatusBar.Icon">
         <item name="android:textSize">@dimen/status_bar_clock_size</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">RobotoCondensed-Regular</item>
         <item name="android:textColor">@color/status_bar_clock_color</item>
     </style>
 
@@ -87,7 +87,7 @@
 
     <style name="TextAppearance.StatusBar.Expanded.Clock">
         <item name="android:textSize">@dimen/qs_time_expanded_size</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">RobotoCondensed-Regular</item>
         <item name="android:textColor">#ffffff</item>
     </style>
 
