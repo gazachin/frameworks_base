@@ -4654,7 +4654,7 @@ public final class Settings {
          * @hide
          *
          */
-        public static final String SHAKE_TO_CLEAN_NOTIFICATION = "shake_to_clean_notification";
+        public static final String SHAKE_CLEAN_NOTIFICATION = "shake_clean_notification";
 
         /**
          * This preference enables showing the power menu on LockScreen.
