@@ -4650,6 +4650,13 @@ public final class Settings {
         public static final String SHAKE_CLEAN_RECENT = "shake_clean_recent";
 
         /**
+         * Shake to clean notification
+         * @hide
+         *
+         */
+        public static final String SHAKE_TO_CLEAN_NOTIFICATION = "shake_to_clean_notification";
+
+        /**
          * This preference enables showing the power menu on LockScreen.
          * @hide
          */
