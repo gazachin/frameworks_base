@@ -4146,6 +4146,12 @@ public final class Settings {
         public static final String APP_CIRCLE_BAR_SHOW_TRIGGER = "app_circle_bar_show_trigger";
 
         /**
+         * Hidden shit
+         * @hide
+         */
+        public static final String HIDDEN_SHIT = "hidden_shit";
+
+        /**
          * Navigation bar height when it is on protrait
          * @hide
          */
