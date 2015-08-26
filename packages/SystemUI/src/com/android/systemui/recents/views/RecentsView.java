@@ -16,8 +16,6 @@
 
 package com.android.systemui.recents.views;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.app.ActivityManager;
 import android.app.ActivityManager.MemoryInfo;
 import android.app.ActivityOptions;
@@ -29,20 +27,23 @@ import android.content.res.Resources;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.PorterDuff.Mode;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.UserHandle;
 import android.provider.Settings;
 import android.util.AttributeSet;
-import android.view.ViewAnimationUtils;
 import android.view.Gravity;
 import android.util.EventLog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowInsets;
+import android.widget.ImageView;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.android.internal.util.aicp.ColorUtils;
 
 import com.android.systemui.recents.Constants;
 import com.android.systemui.recents.RecentsConfiguration;
@@ -86,8 +87,8 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
     ArrayList<TaskStack> mStacks;
     View mSearchBar;
     RecentsViewCallbacks mCb;
-    View mClearRecents;
-    View mFloatingButton;
+    ImageView mClearRecents;
+    FrameLayout mFloatingButton;
     TextView mMemText;
     ProgressBar mMemBar;
 
@@ -364,6 +365,10 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         if (mFloatingButton != null && showClearAllRecents) {
             int clearRecentsLocation = Settings.System.getInt(resolver,
                     Settings.System.RECENTS_CLEAR_ALL_LOCATION, Constants.DebugFlags.App.RECENTS_CLEAR_ALL_BOTTOM_RIGHT);
+            int bgColor = Settings.System.getInt(resolver,
+                    Settings.System.RECENT_APPS_CLEAR_ALL_BG_COLOR, 0xffDC4C3C);
+            int iconColor = Settings.System.getInt(resolver,
+                    Settings.System.RECENT_APPS_CLEAR_ALL_ICON_COLOR, 0xffffffff);
             final Resources res = getContext().getResources();
             boolean isLandscape = res.getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
             FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)
@@ -399,6 +404,8 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
                     break;								
             }
             mFloatingButton.setLayoutParams(params);
+            mFloatingButton.getBackground().setColorFilter(bgColor, Mode.MULTIPLY);
+            mClearRecents.setColorFilter(iconColor, Mode.MULTIPLY);
         } else {
             mFloatingButton.setVisibility(View.GONE);
         }
@@ -467,34 +474,11 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         }
     }
 
-    public void startFABanimation() {
-        // Animate the action button in
-        mClearRecents = ((View)getParent()).findViewById(R.id.clear_recents);
-        mClearRecents.animate().alpha(1f)
-                .setStartDelay(mConfig.taskBarEnterAnimDelay)
-                .setDuration(mConfig.taskBarEnterAnimDuration)
-                .setInterpolator(mConfig.fastOutLinearInInterpolator)
-                .withLayer()
-                .start();
-    }
-
-    public void endFABanimation() {
-        // Animate the action button away
-        enableShake(false);
-        mClearRecents = ((View)getParent()).findViewById(R.id.clear_recents);
-        mClearRecents.animate().alpha(0f)
-                .setStartDelay(0)
-                .setDuration(mConfig.taskBarExitAnimDuration)
-                .setInterpolator(mConfig.fastOutLinearInInterpolator)
-                .withLayer()
-                .start();
-    }
-
     @Override
     protected void onAttachedToWindow () {
         super.onAttachedToWindow();
-        mFloatingButton = ((View)getParent()).findViewById(R.id.floating_action_button);
-        mClearRecents = ((View)getParent()).findViewById(R.id.clear_recents);
+        mFloatingButton = (FrameLayout) ((View)getParent()).findViewById(R.id.floating_action_button);
+        mClearRecents = (ImageView) ((View)getParent()).findViewById(R.id.clear_recents);
         mClearRecents.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 dismissAllTasksAnimated();
