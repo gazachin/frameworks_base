@@ -31,7 +31,6 @@ import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -53,8 +52,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView.OnItemClickListener;
 import libcore.util.Objects;
-
-import com.android.internal.util.aicp.ColorUtils;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -1583,7 +1580,7 @@ public class RemoteViews implements Parcelable, Filter {
             Drawable d = drawables[index];
             if (d != null) {
                 d.mutate();
-                d.setColorFilter(ColorUtils.getColorFilter(color));
+                d.setColorFilter(color, mode);
             }
         }
 
