@@ -739,8 +739,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             // This method reads Settings.Secure.RECENTS_LONG_PRESS_ACTIVITY
             updateCustomRecentsLongPressHandler(false);
 
-<<<<<<< HEAD
-=======
             mShowStatusBarCarrier = Settings.System.getIntForUser(resolver,
                     Settings.System.STATUS_BAR_CARRIER, 0, mCurrentUserId) == 1;
             showStatusBarCarrierLabel(mShowStatusBarCarrier);
@@ -749,7 +747,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     resolver, Settings.System.STATUS_BAR_AICP_LOGO_STYLE, 0,
                     UserHandle.USER_CURRENT);
 
->>>>>>> 19f8c72... Aicp Logo style 2/2
             mAicpLogo = Settings.System.getIntForUser(resolver,
                     Settings.System.STATUS_BAR_AICP_LOGO, 0, mCurrentUserId) == 1;
             showAicpLogo(mAicpLogo, mAicpLogoStyle);
