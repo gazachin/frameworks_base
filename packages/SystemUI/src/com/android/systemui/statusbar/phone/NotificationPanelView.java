@@ -768,6 +768,7 @@ public class NotificationPanelView extends PanelView implements
                 && mQsExpansionEnabled) {
             mTwoFingerQsExpandPossible = true;
             resetQsPanelVisibility();
+            mStatusBar.resetQsPanelVisibility();
         }
         boolean twoFingerQsEvent = mTwoFingerQsExpandPossible
                 && (event.getActionMasked() == MotionEvent.ACTION_POINTER_DOWN
@@ -1230,6 +1231,7 @@ public class NotificationPanelView extends PanelView implements
         if (mKeyguardShowing) {
             updateHeaderKeyguard();
             resetQsPanelVisibility();
+            mStatusBar.resetQsPanelVisibility();
         }
         if (mStatusBarState == StatusBarState.SHADE && mQsExpanded
                 && !mStackScrollerOverscrolling && mQsScrimEnabled) {
@@ -1434,6 +1436,9 @@ public class NotificationPanelView extends PanelView implements
             mQsPanel.setVisibility(expandVisually && !mTaskManagerShowing
                     ? View.VISIBLE : View.GONE);
             mTaskManagerPanel.setVisibility(expandVisually && mTaskManagerShowing
+            mQsPanel.setVisibility(expandVisually && !taskManagerShowing
+                    ? View.VISIBLE : View.GONE);
+            mTaskManagerPanel.setVisibility(expandVisually && taskManagerShowing
                     && !mKeyguardShowing ? View.VISIBLE : View.GONE);
         }
     }
