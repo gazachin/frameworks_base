@@ -20,8 +20,8 @@ import android.app.ActivityManager;
 import android.app.ActivityManagerNative;
 import android.app.admin.DevicePolicyManager;
 import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
 import android.content.Context;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -36,6 +36,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
+import android.graphics.PorterDuff.Mode;
 import android.hardware.ITorchService;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -60,9 +61,10 @@ import android.widget.TextView;
 
 import com.android.internal.util.cm.LockscreenShortcutsHelper;
 import com.android.internal.widget.LockPatternUtils;
-import com.android.keyguard.EmergencyButton;
 import com.android.keyguard.KeyguardUpdateMonitor;
 import com.android.keyguard.KeyguardUpdateMonitorCallback;
+import com.android.systemui.EventLogConstants;
+import com.android.systemui.EventLogTags;
 import com.android.systemui.R;
 import com.android.systemui.cm.UserContentObserver;
 import com.android.systemui.statusbar.CommandQueue;
@@ -103,7 +105,6 @@ public class KeyguardBottomAreaView extends FrameLayout implements View.OnClickL
     private KeyguardAffordanceView mPhoneImageView;
     private KeyguardAffordanceView mLockIcon;
     private TextView mIndicationText;
-    private EmergencyButton mEmergencyButton;
     private ViewGroup mPreviewContainer;
 
     private View mPhonePreview;
@@ -188,7 +189,6 @@ public class KeyguardBottomAreaView extends FrameLayout implements View.OnClickL
         mPhoneImageView = (KeyguardAffordanceView) findViewById(R.id.phone_button);
         mLockIcon = (KeyguardAffordanceView) findViewById(R.id.lock_icon);
         mIndicationText = (TextView) findViewById(R.id.keyguard_indication_text);
-        mEmergencyButton = (EmergencyButton) findViewById(R.id.emergency_call_button);
         mShortcutHelper = new LockscreenShortcutsHelper(mContext, this);
         watchForCameraPolicyChanges();
         updateCameraVisibility();
@@ -196,7 +196,6 @@ public class KeyguardBottomAreaView extends FrameLayout implements View.OnClickL
         mUnlockMethodCache = UnlockMethodCache.getInstance(getContext());
         mUnlockMethodCache.addListener(this);
         updateLockIcon();
-        updateEmergencyButton();
         setClipChildren(false);
         setClipToPadding(false);
         mPreviewInflater = new PreviewInflater(mContext, new LockPatternUtils(mContext));
@@ -209,6 +208,7 @@ public class KeyguardBottomAreaView extends FrameLayout implements View.OnClickL
 
         initAccessibility();
         updateCustomShortcuts();
+        updateIndicationTextColor();
     }
 
     private void updateCustomShortcuts() {
@@ -260,7 +260,6 @@ public class KeyguardBottomAreaView extends FrameLayout implements View.OnClickL
                 getResources().getDimensionPixelSize(
                         com.android.internal.R.dimen.text_size_small_material));
 
-        updateEmergencyButton();
     }
 
     public void setActivityStarter(ActivityStarter activityStarter) {
@@ -304,45 +303,14 @@ public class KeyguardBottomAreaView extends FrameLayout implements View.OnClickL
             shortcut) {
         boolean customTarget = mShortcutHelper.isTargetCustom(shortcut);
         if (customTarget) {
-            if (isProtected(mShortcutHelper.getIntent(shortcut))) {
-                return false;
-            }
-        } else if (shortcut == LockscreenShortcutsHelper.Shortcuts.LEFT_SHORTCUT
-                && isProtected(PHONE_INTENT)) {
-            // is dialer protected?
-            return false;
-        } else if (shortcut == LockscreenShortcutsHelper.Shortcuts.RIGHT_SHORTCUT
-                && isProtected(getCameraIntent())) {
-            // is camera protected?
-            return false;
-        }
-
-        if (customTarget) {
             boolean isEmpty = mShortcutHelper.isTargetEmpty(shortcut);
-            if (visible && isEmpty) {
+            if (isEmpty) {
                 visible = false;
             } else {
                 visible = true;
             }
         }
         return visible;
-    }
-
-    private boolean isProtected(Intent intent) {
-        ResolveInfo resolved = mContext.getPackageManager().resolveActivityAsUser(intent,
-                PackageManager.MATCH_DEFAULT_ONLY,
-                mLockPatternUtils.getCurrentUser());
-        if (resolved != null) {
-            try {
-                boolean protect = mContext.getPackageManager().getApplicationInfo(
-                        resolved.activityInfo.packageName, 0).protect;
-                return protect;
-            } catch (PackageManager.NameNotFoundException e) {
-                return false;
-            }
-        }
-
-        return false;
     }
 
     private void updatePhoneVisibility() {
@@ -442,6 +410,9 @@ public class KeyguardBottomAreaView extends FrameLayout implements View.OnClickL
     }
 
     private void handleTrustCircleClick() {
+        EventLogTags.writeSysuiLockscreenGesture(
+                EventLogConstants.SYSUI_LOCKSCREEN_GESTURE_TAP_LOCK, 0 /* lengthDp - N/A */,
+                0 /* velocityDp - N/A */);
         mIndicationController.showTransientIndication(
                 R.string.keyguard_indication_trust_disabled);
         mLockPatternUtils.requireCredentialEntry(mLockPatternUtils.getCurrentUser());
@@ -523,8 +494,12 @@ public class KeyguardBottomAreaView extends FrameLayout implements View.OnClickL
             return;
         }
         // TODO: Real icon for facelock.
-        int iconRes = getIconLockResId();
+        int iconRes = mUnlockMethodCache.isFaceUnlockRunning()
+                ? com.android.internal.R.drawable.ic_account_circle
+                : mUnlockMethodCache.isCurrentlyInsecure() ? R.drawable.ic_lock_open_24dp
+                : R.drawable.ic_lock_24dp;
         if (mLastUnlockIconRes != iconRes) {
+            mLastUnlockIconRes = iconRes;
             Drawable icon = mContext.getDrawable(iconRes);
             int iconHeight = getResources().getDimensionPixelSize(
                     R.dimen.keyguard_affordance_icon_height);
@@ -534,25 +509,14 @@ public class KeyguardBottomAreaView extends FrameLayout implements View.OnClickL
                 icon = new IntrinsicSizeDrawable(icon, iconWidth, iconHeight);
             }
             mLockIcon.setImageDrawable(icon);
+            mCameraImageView.updateColorSettings();
+            mPhoneImageView.updateColorSettings();
+            mLockIcon.updateColorSettings();
+            updateIndicationTextColor();
         }
-        mLockIcon.updateColorSettings();
         boolean trustManaged = mUnlockMethodCache.isTrustManaged();
         mTrustDrawable.setTrustManaged(trustManaged);
         updateLockIconClickability();
-    }
-
-    private int getIconLockResId() {
-        int iconRes;
-        if (mUnlockMethodCache.isFaceUnlockRunning()) {
-            iconRes = com.android.internal.R.drawable.ic_account_circle;
-        } else if (mUnlockMethodCache.isFingerUnlockRunning()) {
-            iconRes = R.drawable.ic_fingerprint;
-        } else if (mUnlockMethodCache.isCurrentlyInsecure()) {
-            iconRes = R.drawable.ic_lock_open_24dp;
-        } else {
-            iconRes =  R.drawable.ic_lock_24dp;
-        }
-        return iconRes;
     }
 
     private String getIndexHint(LockscreenShortcutsHelper.Shortcuts shortcut) {
@@ -619,6 +583,7 @@ public class KeyguardBottomAreaView extends FrameLayout implements View.OnClickL
         return false;
     }
 
+    @Override
     public void onUnlockMethodStateChanged() {
         updateLockIcon();
         updateCameraVisibility();
@@ -634,13 +599,6 @@ public class KeyguardBottomAreaView extends FrameLayout implements View.OnClickL
         if (mCameraPreview != null) {
             mPreviewContainer.addView(mCameraPreview);
             mCameraPreview.setVisibility(View.INVISIBLE);
-        }
-    }
-
-    private void updateEmergencyButton() {
-        boolean enabled = getResources().getBoolean(R.bool.config_showEmergencyButton);
-        if (mEmergencyButton != null) {
-            mLockPatternUtils.updateEmergencyCallButtonState(mEmergencyButton, enabled, false);
         }
     }
 
@@ -671,17 +629,6 @@ public class KeyguardBottomAreaView extends FrameLayout implements View.OnClickL
                 .setInterpolator(mLinearOutSlowInInterpolator)
                 .setStartDelay(delay)
                 .setDuration(DOZE_ANIMATION_ELEMENT_DURATION);
-    }
-
-    public void updateTextColor(int color) {
-        mIndicationText.setTextColor(color);
-
-    }
-
-    public void updateIconColor(int color) {
-        mCameraImageView.updateColorSettings(color);
-        mPhoneImageView.updateColorSettings(color);
-        mLockIcon.updateColorSettings(color);
     }
 
     private final BroadcastReceiver mDevicePolicyReceiver = new BroadcastReceiver() {
@@ -725,6 +672,22 @@ public class KeyguardBottomAreaView extends FrameLayout implements View.OnClickL
 
     public boolean isTargetCustom(LockscreenShortcutsHelper.Shortcuts shortcut) {
         return mShortcutHelper.isTargetCustom(shortcut);
+    }
+
+    public void updateIconColor(int color) {
+         mCameraImageView.updateColorSettings(color);
+         mPhoneImageView.updateColorSettings(color);
+         mLockIcon.updateColorSettings(color);
+    }
+
+    public void updateIndicationTextColor() {
+        ContentResolver resolver = getContext().getContentResolver();
+        int color = Settings.System.getInt(resolver,
+                Settings.System.LOCKSCREEN_INDICATION_TEXT_COLOR, 0xFFFFFFFF);
+
+        if (mIndicationText != null) {
+            mIndicationText.setTextColor(color);
+        }
     }
 
     @Override
