@@ -122,9 +122,4 @@
 
     <!-- Battery Saver Dismiss -->
     <string name="battery_saver_dismiss_title">Dismiss</string>
-
-    <!-- Navigation Bar tile -->
-    <string name="quick_settings_navbar_on">NavBar Enabled</string>
-    <string name="quick_settings_navbar_off">NavBar Disabled</string>
-
 </resources>
