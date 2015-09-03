@@ -17,7 +17,6 @@
 package com.android.keyguard;
 
 import android.app.ActivityManager;
-import android.provider.AlarmClock;
 import android.app.AlarmManager;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -43,7 +42,6 @@ import android.widget.TextView;
 
 import com.android.internal.util.cm.WeatherController;
 import com.android.internal.util.cm.WeatherControllerImpl;
-import com.android.internal.util.slim.AltImageHelper;
 import com.android.internal.widget.LockPatternUtils;
 
 import java.util.Date;
@@ -409,13 +407,7 @@ public class KeyguardStatusView extends GridLayout implements
         mAlarmStatusView.setCompoundDrawablesRelative(alarmIcon, null, null, null);
         mWeatherConditionImage.setImageDrawable(null);
         Drawable weatherIcon = mWeatherConditionDrawable;
-        if (mIconColor == -2) {
-            mWeatherConditionImage.setImageDrawable(weatherIcon);
-        } else {
-            Bitmap coloredWeatherIcon =
-                    AltImageHelper.getColoredBitmap(weatherIcon, mIconColor);
-            mWeatherConditionImage.setImageBitmap(coloredWeatherIcon);
-        }
+        mWeatherConditionImage.setImageDrawable(weatherIcon);
     }
 
     private void updateClockColor() {
