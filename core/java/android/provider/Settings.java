@@ -4236,12 +4236,6 @@ public final class Settings {
         public static final String NAVIGATION_BAR_WIDTH = "navigation_bar_width";
 
         /**
-         * Wether navigation bar is enabled or not
-         * @hide
-         */
-        public static final String NAVIGATION_BAR_SHOW = "navigation_bar_show";
-
-        /**
          * Navigation bar button color
          * @hide
          */
