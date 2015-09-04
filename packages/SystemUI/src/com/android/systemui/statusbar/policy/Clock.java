@@ -93,11 +93,13 @@ public class Clock extends TextView implements DemoMode {
     protected int mClockDateStyle = CLOCK_DATE_STYLE_REGULAR;
     protected int mClockStyle = STYLE_CLOCK_RIGHT;
     protected int mClockFontStyle = FONT_NORMAL;
+    private int mClockFontSize = 14;
     protected boolean mShowClock;
     private int mClockAndDateWidth;
     protected boolean mShowClockSeconds = false;
 
     private int mAmPmStyle;
+    private TextView mClockView;
 
     private SettingsObserver mSettingsObserver;
     private PhoneStatusBar mStatusBar;
@@ -136,6 +138,9 @@ public class Clock extends TextView implements DemoMode {
             resolver.registerContentObserver(Settings.System
                     .getUriFor(Settings.System.CLOCK_USE_SECOND), false,
                     mSettingsObserver);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.STATUSBAR_CLOCK_FONT_SIZE), false, 
+                    this, UserHandle.USER_ALL);
             updateSettings();
         }
 
@@ -391,6 +396,9 @@ public class Clock extends TextView implements DemoMode {
         mClockFontStyle = Settings.System.getInt(resolver,
                 Settings.System.STATUSBAR_CLOCK_FONT_STYLE, FONT_NORMAL);
 
+        mClockFontSize = Settings.System.getIntForUser(resolver,
+                Settings.System.STATUSBAR_CLOCK_FONT_SIZE, 14,
+                UserHandle.USER_CURRENT);
         mShowClockSeconds = Settings.System.getIntForUser(resolver,
                 Settings.System.CLOCK_USE_SECOND, 0,
                 UserHandle.USER_CURRENT) == 1;
@@ -417,6 +425,7 @@ public class Clock extends TextView implements DemoMode {
             setTextColor(clockColor);
             getFontStyle(mClockFontStyle);
             updateClockVisibility();
+            mClockView.setTextSize(mClockFontSize);
             updateClock();
         }
 
