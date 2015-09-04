@@ -88,6 +88,7 @@ public class Clock extends TextView implements DemoMode {
     public static final int FONT_LIGHT = 3;
     public static final int FONT_LIGHT_ITALIC = 4;
     public static final int FONT_NORMAL = 5;
+    private int mClockFontSize;
 
     protected int mClockDateDisplay = CLOCK_DATE_DISPLAY_GONE;
     protected int mClockDateStyle = CLOCK_DATE_STYLE_REGULAR;
@@ -98,6 +99,7 @@ public class Clock extends TextView implements DemoMode {
     protected boolean mShowClockSeconds = false;
 
     private int mAmPmStyle;
+    private TextView mClockView;
 
     private SettingsObserver mSettingsObserver;
     private PhoneStatusBar mStatusBar;
@@ -136,6 +138,9 @@ public class Clock extends TextView implements DemoMode {
             resolver.registerContentObserver(Settings.System
                     .getUriFor(Settings.System.CLOCK_USE_SECOND), false,
                     mSettingsObserver);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.STATUSBAR_CLOCK_FONT_SIZE), false, 
+                    this, UserHandle.USER_ALL);
             updateSettings();
         }
 
@@ -372,6 +377,9 @@ public class Clock extends TextView implements DemoMode {
         mClockStyle = Settings.System.getIntForUser(resolver,
                 Settings.System.STATUSBAR_CLOCK_STYLE, STYLE_CLOCK_RIGHT,
                 UserHandle.USER_CURRENT);
+        mClockFontSize = Settings.System.getIntForUser(resolver,
+                Settings.System.STATUSBAR_CLOCK_FONT_SIZE, 14,
+                UserHandle.USER_CURRENT);
         mClockDateDisplay = Settings.System.getIntForUser(resolver,
                 Settings.System.STATUSBAR_CLOCK_DATE_DISPLAY, CLOCK_DATE_DISPLAY_GONE,
                 UserHandle.USER_CURRENT);
@@ -416,6 +424,7 @@ public class Clock extends TextView implements DemoMode {
         if (mAttached) {
             setTextColor(clockColor);
             getFontStyle(mClockFontStyle);
+            mClockView.setTextSize(mClockFontSize);
             updateClockVisibility();
             updateClock();
         }
