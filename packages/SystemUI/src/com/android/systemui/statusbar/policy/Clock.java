@@ -88,18 +88,17 @@ public class Clock extends TextView implements DemoMode {
     public static final int FONT_LIGHT = 3;
     public static final int FONT_LIGHT_ITALIC = 4;
     public static final int FONT_NORMAL = 5;
-    private int mClockFontSize;
 
     protected int mClockDateDisplay = CLOCK_DATE_DISPLAY_GONE;
     protected int mClockDateStyle = CLOCK_DATE_STYLE_REGULAR;
     protected int mClockStyle = STYLE_CLOCK_RIGHT;
     protected int mClockFontStyle = FONT_NORMAL;
+    private int mClockFontSize = 14;
     protected boolean mShowClock;
     private int mClockAndDateWidth;
     protected boolean mShowClockSeconds = false;
 
     private int mAmPmStyle;
-    private TextView mClockView;
 
     private SettingsObserver mSettingsObserver;
     private PhoneStatusBar mStatusBar;
@@ -423,8 +422,8 @@ public class Clock extends TextView implements DemoMode {
 
         if (mAttached) {
             setTextColor(clockColor);
+            setTextSize(mClockFontSize);
             getFontStyle(mClockFontStyle);
-            mClockView.setTextSize(mClockFontSize);
             updateClockVisibility();
             updateClock();
         }
