@@ -232,7 +232,8 @@ public class StatusBarKeyguardViewManager {
         }
         mOccluded = occluded;
         mStatusBarWindowManager.setKeyguardOccluded(occluded);
-        reset(false);
+        mPhoneStatusBar.getVisualizer().setOccluded(occluded);
+        reset();
     }
 
     public boolean isOccluded() {
