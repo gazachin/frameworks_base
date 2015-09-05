@@ -56,7 +56,7 @@
             android:paddingStart="7dp"
             android:visibility="gone"
             android:text="@string/aicp_label"
-            android:textAppearance="@style/TextAppearance.StatusBar.CarrierLabel"
+            android:textAppearance="@style/TextAppearance.StatusBar.Clock"
             />
 
         <com.android.systemui.statusbar.AlphaOptimizedFrameLayout

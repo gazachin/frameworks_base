@@ -349,9 +349,4 @@
         <item name="android:fontFamily">RobotoCondensed-Regular</item>
         <item name="android:textColor">@color/kg_carrier_text</item>
     </style>
-
-    <style name="TextAppearance.StatusBar.CarrierLabel" parent="@*android:style/TextAppearance.StatusBar.Icon">
-        <item name="android:fontFamily">RobotoCondensed-Regular</item>
-    </style>
-
 </resources>
