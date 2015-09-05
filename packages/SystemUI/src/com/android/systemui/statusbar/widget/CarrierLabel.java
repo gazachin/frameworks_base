@@ -47,9 +47,8 @@ public class CarrierLabel extends TextView {
     private Context mContext;
     private boolean mAttached;
     private static boolean isCN;
-    private int mCarrierFontSize;
+    private int mCarrierFontSize = 14;
 
-    private TextView mCarrierView;
     protected int mCarrierColor = getResources().getColor(R.color.kg_carrier_text);
     Handler mHandler;
 
@@ -70,7 +69,6 @@ public class CarrierLabel extends TextView {
         public void onChange(boolean selfChange) {
             updateColor();
             updateSize();
-            mCarrierView.setTextSize(mCarrierFontSize);
         }
     }
 
@@ -187,6 +185,6 @@ public class CarrierLabel extends TextView {
                 Settings.System.STATUS_BAR_CARRIER_FONT_SIZE, 14,
                 UserHandle.USER_CURRENT);
 
-        mCarrierView.setTextSize(mCarrierFontSize);
+        setTextSize(mCarrierFontSize);
     }
 }
