@@ -127,12 +127,12 @@
     <style name="TextAppearance.QS">
         <item name="android:textStyle">normal</item>
         <item name="android:textColor">@color/qs_text</item>
-        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:fontFamily">RobotoCondensed-Regular</item>
     </style>
 
     <style name="TextAppearance.QS.DetailHeader">
         <item name="android:textSize">@dimen/qs_detail_header_text_size</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">RobotoCondensed-Regular</item>
     </style>
 
     <style name="TextAppearance.QS.DetailItemPrimary">
@@ -156,7 +156,7 @@
     <style name="TextAppearance.QS.DetailButton">
         <item name="android:textSize">@dimen/qs_detail_button_text_size</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">RobotoCondensed-Regular</item>
         <item name="android:gravity">center</item>
     </style>
 
@@ -290,7 +290,7 @@
     <!-- Slim recents -->
     <style name="card.header_simple_title">
         <item name="android:textSize">@dimen/recent_text_size</item>
-        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:fontFamily">RobotoCondensed-Regular</item>
         <item name="android:textColor">@color/card_text_color_header</item>
         <item name="android:layout_width">@dimen/recent_header_width</item>
         <item name="android:layout_height">@dimen/recent_app_icon_size</item>
