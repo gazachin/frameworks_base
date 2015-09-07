@@ -5621,7 +5621,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private void handleLongPressBackRecents(View v) {
         try {
             boolean sendBackLongPress = false;
-            boolean hijackRecentsLongPress = false;
             IActivityManager activityManager = ActivityManagerNative.getDefault();
             boolean isAccessiblityEnabled = mAccessibilityManager.isEnabled();
             if (activityManager.isInLockTaskMode() && !isAccessiblityEnabled) {
@@ -5637,16 +5636,12 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     // If we aren't pressing recents right now then they presses
                     // won't be together, so send the standard long-press action.
                     sendBackLongPress = true;
-                } else if (NavbarEditor.NAVBAR_RECENT.equals(v.getTag()) && !activityManager.isInLockTaskMode()) {
-                    hijackRecentsLongPress = true;
                 }
                 mLastLockToAppLongPress = time;
             } else {
                 // If this is back still need to handle sending the long-press event.
                 if (NavbarEditor.NAVBAR_BACK.equals(v.getTag())) {
                     sendBackLongPress = true;
-                } else if (NavbarEditor.NAVBAR_RECENT.equals(v.getTag()) && !activityManager.isInLockTaskMode()) {
-                    hijackRecentsLongPress = true;
                 } else if (isAccessiblityEnabled && activityManager.isInLockTaskMode()) {
                     // When in accessibility mode a long press that is recents (not back)
                     // should stop lock task.
@@ -5661,19 +5656,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 keyButtonView.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_LONG_CLICKED);
             }
 
-            if (hijackRecentsLongPress) {
-                // If there is a user-selected, registered handler for the
-                // recents long press, start the Intent.  Otherwise,
-                // perform the default action, which is last app switching.
-
-                // Copy it so the value doesn't change between now and when the activity is started.
-                ComponentName customRecentsLongPressHandler = mCustomRecentsLongPressHandler;
-                if (customRecentsLongPressHandler != null) {
-                    startCustomRecentsLongPressActivity(customRecentsLongPressHandler);
-                } else {
-                    ActionUtils.switchToLastApp(mContext, mCurrentUserId);
-                }
-            }
         } catch (RemoteException e) {
             Log.d(TAG, "Unable to reach activity manager", e);
         }
@@ -5831,29 +5813,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
             }
         }
-    }
-
-    private ActivityManager.RunningTaskInfo getLastTask(final ActivityManager am) {
-        final String defaultHomePackage = resolveCurrentLauncherPackage();
-        List<ActivityManager.RunningTaskInfo> tasks = am.getRunningTasks(5);
-
-        for (int i = 1; i < tasks.size(); i++) {
-            String packageName = tasks.get(i).topActivity.getPackageName();
-            if (!packageName.equals(defaultHomePackage)
-                    && !packageName.equals(mContext.getPackageName())) {
-                return tasks.get(i);
-            }
-        }
-
-        return null;
-    }
-
-    private String resolveCurrentLauncherPackage() {
-        final Intent launcherIntent = new Intent(Intent.ACTION_MAIN)
-                .addCategory(Intent.CATEGORY_HOME);
-        final PackageManager pm = mContext.getPackageManager();
-        final ResolveInfo launcherInfo = pm.resolveActivity(launcherIntent, 0);
-        return launcherInfo.activityInfo.packageName;
     }
 
     // Recents

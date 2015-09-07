@@ -77,7 +77,6 @@ public class KeyButtonView extends ImageView {
     private Animator mAnimateToQuiescent = new ObjectAnimator();
 
     private PowerManager mPm;
-    private boolean mPerformedLongClick;
 
     private boolean mShouldTintIcons = true;
     private final Handler mHandler = new Handler();
@@ -94,7 +93,6 @@ public class KeyButtonView extends ImageView {
                     postDelayed(mCheckLongPress, ViewConfiguration.getKeyRepeatDelay());
                 } else if (isLongClickable()) {
                     // Just an old-fashioned ImageView
-                    mPerformedLongClick = true;
                     performLongClick();
                 } else {
                     sendEvent(KeyEvent.ACTION_DOWN, KeyEvent.FLAG_LONG_PRESS);
@@ -328,14 +326,13 @@ public class KeyButtonView extends ImageView {
                     }
                 } else {
                     // no key code, just a regular ImageView
-                    if (doIt && !mPerformedLongClick) {
+                    if (doIt) {
                         performClick();
                     }
                 }
                 if (supportsLongPress()) {
                     removeCallbacks(mCheckLongPress);
                 }
-                mPerformedLongClick = false;
                 break;
         }
 
