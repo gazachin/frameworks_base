@@ -18,6 +18,7 @@
 package com.android.systemui.statusbar.phone;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.database.ContentObserver;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -25,6 +26,7 @@ import android.os.Handler;
 import android.os.UserHandle;
 import android.provider.Settings;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.AnimationUtils;
@@ -94,6 +96,16 @@ public class KeyguardStatusBarView extends RelativeLayout {
                 android.R.interpolator.fast_out_slow_in);
         updateUserSwitcher();
         updateVisibilities();
+    }
+
+    @Override
+    protected void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        // Respect font size setting.
+        mCarrierLabel.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                getResources().getDimensionPixelSize(
+                        com.android.internal.R.dimen.text_size_small_material));
     }
 
     private void loadDimens() {
@@ -263,4 +275,7 @@ public class KeyguardStatusBarView extends RelativeLayout {
         super.onDetachedFromWindow();
     }
 
+    public void updateCarrierLabelColor(int color) {
+        mCarrierLabel.setTextColor(color);
+    }
 }

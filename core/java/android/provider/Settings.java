@@ -4436,6 +4436,24 @@ public final class Settings {
         public static final String LOCK_SCREEN_WEATHER_CONDITION_ICON = "lock_screen_weather_condition_icon";
 
         /**
+         * Whether to colorize all weather condition icons on the lock screen
+         * @hide
+         */
+        public static final String LOCK_SCREEN_WEATHER_COLORIZE_ALL_ICONS = "lock_screen_weather_colorize_all_icons";
+
+        /**
+         * Color of the text on the lock screen
+         * @hide
+         */
+        public static final String LOCK_SCREEN_TEXT_COLOR = "lock_screen_text_color";
+
+        /**
+         * Color of the icons on the lock screen
+         * @hide
+         */
+        public static final String LOCK_SCREEN_ICON_COLOR = "lock_screen_icon_color";
+
+        /**
          * Whether to hide the weather panel when the notifications will reach the number of notifications
          * @hide
          */
