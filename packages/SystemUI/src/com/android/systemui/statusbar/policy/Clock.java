@@ -480,9 +480,6 @@ public class Clock extends TextView implements DemoMode {
             case FONT_THIN_ITALIC:
                 setTypeface(Typeface.create("Roboto-Condensed-thin", Typeface.ITALIC));
                 break;
-            case FONT_CONDENSED:
-                setTypeface(Typeface.create("Roboto-Condensed-condensed", Typeface.NORMAL));
-                break;
             case FONT_CONDENSED_ITALIC:
                 setTypeface(Typeface.create("Roboto-Condensed-condensed", Typeface.ITALIC));
                 break;

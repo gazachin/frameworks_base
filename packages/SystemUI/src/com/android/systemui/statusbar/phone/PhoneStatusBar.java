@@ -2987,7 +2987,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.LOCK_SCREEN_ICON_COLOR, 0xffffffff);
         if (mKeyguardStatusBar != null) {
-            mKeyguardStatusBar.updateCarrierLabelColor(textColor);
         }
     }
 
