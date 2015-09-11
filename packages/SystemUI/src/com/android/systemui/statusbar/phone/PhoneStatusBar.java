@@ -2330,12 +2330,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     }
 
     @Override
-    public void hideHeadsUp() {
-        mHandler.removeMessages(MSG_HIDE_HEADS_UP);
-        mHandler.sendEmptyMessage(MSG_HIDE_HEADS_UP);
-    }
 
-    @Override
     public void scheduleHeadsUpOpen(boolean immediate) {
         if (immediate) {
             setHeadsUpVisibility(true);
