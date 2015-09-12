@@ -3784,42 +3784,6 @@ public final class Settings {
         public static final String STATUS_BAR_EXPANDED_HEADER_BG_COLOR = "status_bar_expanded_header_bg_color";
 
         /**
-         * Color of the clock on the header of the expanded status bar
-         * @hide
-         */
-        public static final String STATUS_BAR_EXPANDED_HEADER_CLOCK_COLOR = "status_bar_expanded_header_clock_color";
-
-        /**
-         * Color of the date on the header of the expanded status bar
-         * @hide
-         */
-        public static final String STATUS_BAR_EXPANDED_HEADER_DATE_COLOR = "status_bar_expanded_header_date_color";
-
-        /**
-         * Color of the alarm on the header of the expanded status bar
-         * @hide
-         */
-        public static final String STATUS_BAR_EXPANDED_HEADER_ALARM_COLOR = "status_bar_expanded_header_alarm_color";
-
-        /**
-         * Color of the clock ampm on the header of the expanded status bar
-         * @hide
-         */
-        public static final String STATUS_BAR_EXPANDED_HEADER_AMPM_COLOR = "status_bar_expanded_header_ampm_color";
-
-        /**
-         * Color of the 1st weather line on the header of the expanded status bar
-         * @hide
-         */
-        public static final String STATUS_BAR_EXPANDED_HEADER_WEATHER1_COLOR = "status_bar_expanded_header_weather1_color";
-
-        /**
-         * Color of the 2nd weather line on the header of the expanded status bar
-         * @hide
-         */
-        public static final String STATUS_BAR_EXPANDED_HEADER_WEATHER2_COLOR = "status_bar_expanded_header_weather2_color";
-
-        /**
          * Enable double tap gesture anywhere on the lock screen put device to sleep
          * @hide
          */
